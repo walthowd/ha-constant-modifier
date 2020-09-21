@@ -1,5 +1,5 @@
 # ha-constant-modifier
-This is a custom component for Home Assistant that can be used to modify, patch or overwrite constants in other components. 
+This is a custom component for Home Assistant that can be used to modify, patch or overwrite constants in other components. Authored by [@puddly](https://github.com/puddly)
 
 ## Installation
 To install, place the constant_modifier in your Home Assistant configuration directory under the custom_components folder
