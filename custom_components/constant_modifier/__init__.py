@@ -35,16 +35,40 @@ def inject(config):
     Patches constants specified as key/value pairs. For example:
 
     constant_modifier:
+      # `MAX_PENDING_MSG` is a top-level constant
       homeassistant.components.websocket_api.http.MAX_PENDING_MSG: 4096
+
+      homeassistant.components.websocket_api.http:
+        MAX_PENDING_MSG: 4096  # `MAX_PENDING_MSG` is a top-level constant
+
+      zhaquirks.xiaomi:
+        MotionCluster.reset_s: 5  # `MotionCluster` is a class with a `reset_s` attr
     """
 
-    for path, value in config[DOMAIN].items():
-        module_name, constant_name = path.rsplit(".", 1)
-        module = importlib.import_module(module_name)
+    for module_name, replacements in config[DOMAIN].items():
+        # Old-style "module.ATTR: value" is replaced with "module: ATTR: value"
+        if not isinstance(replacements, dict):
+            value = replacements
+            module_name, constant = module_name.rsplit(".", 1)
+            replacements = {constant: value}
 
-        old_value = getattr(module, constant_name)
-        setattr(module, constant_name, value)
-        LOGGER.warning("Patched %s = %s (was %s)", path, value, old_value)
+        for path, value in replacements.items():
+            *attrs, attr = path.split('.')
+            obj = importlib.import_module(module_name)
+
+            for a in attrs:
+                obj = getattr(obj, a)
+
+            old_value = getattr(obj, attr)
+            setattr(obj, attr, value)
+
+            LOGGER.warning(
+                "Patched %s, %s = %s (was %s)",
+                module_name,
+                path,
+                value,
+                old_value,
+            )
 
 
 # We are a purposefully a legacy integration so we can run this when we're imported.
