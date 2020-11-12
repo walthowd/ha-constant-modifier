@@ -9,8 +9,12 @@ Add to `configuration.yaml` any constants you need to modify. For example
 
 ```
 constant_modifier:
-  homeassistant.components.websocket_api.http.MAX_PENDING_MSG: 4096
-  homeassistant.components.websocket_api.http.PENDING_MSG_PEAK: 2048
+  homeassistant.components.websocket_api.http:
+    MAX_PENDING_MSG: 4096
+    PENDING_MSG_PEAK: 2048
+
+  zhaquirks.xiaomi:
+    MotionCluster.reset_s: 5
 ```
 
 
